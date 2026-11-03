@@ -18,7 +18,7 @@ import os = require('os');
  * @returns   IExecSyncResult
  */
 export function execSync(tool: string, args: string | string[], options?: IExecSyncOptions): IExecSyncResult {
-    let tr: ToolRunner = this.tool(tool);
+    let tr: ToolRunner = new ToolRunner(tool);
     tr.on('debug', (data: string) => {
         core.debug(data);
     });
@@ -714,11 +714,9 @@ class ToolRunner extends events.EventEmitter {
         }
 
         if (val instanceof Array) {
-            core.debug(this.toolPath + ' arg: ' + JSON.stringify(val));
             this.args = this.args.concat(val);
         }
         else if (typeof (val) === 'string') {
-            core.debug(this.toolPath + ' arg: ' + val);
             this.args = this.args.concat(val.trim());
         }
 
@@ -738,7 +736,6 @@ class ToolRunner extends events.EventEmitter {
             return this;
         }
 
-        core.debug(this.toolPath + ' arg: ' + val);
         this.args = this.args.concat(this._argStringToArray(val));
         return this;
     }
@@ -755,10 +752,6 @@ class ToolRunner extends events.EventEmitter {
      */
     public execSync(options?: IExecSyncOptions): IExecSyncResult {
         core.debug('exec tool: ' + this.toolPath);
-        core.debug('arguments:');
-        this.args.forEach((arg) => {
-            core.debug('   ' + arg);
-        });
 
         var success = true;
         options = this._cloneExecOptions(options as IExecOptions);

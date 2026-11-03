@@ -327,3 +327,5 @@ ASALocalRun/
 
 # MFractors (Xamarin productivity tool) working folder 
 .mfractor/
+# Node.js dependencies are installed locally and bundled for the action.
+node_modules/
