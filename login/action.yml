@@ -4,11 +4,11 @@ description: 'Login Azure wraps the az login, allowing for Azure actions to log 
 inputs: 
   creds:
     description: 'Paste output of `az ad sp create-for-rbac` as value of secret variable: AZURE_CREDENTIALS'
-    deprecationMessage: 'This Login action is ARCHIVED and will not receive any updates, update your workflows to use the new action azure/login@v1'
+    deprecationMessage: 'This legacy Login action is deprecated. Update your workflows to use the maintained azure/login@v2 action.'
     required: true
 branding:
   icon: 'login.svg'
   color: 'blue'
 runs:
-  using: 'node12'
+  using: 'node24'
   main: 'lib/main.js'

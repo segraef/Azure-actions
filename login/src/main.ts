@@ -6,6 +6,7 @@ async function main() {
     try{
       throwIfError(execSync("az", "--version"));
       let creds = core.getInput('creds', { required: true });
+      core.setSecret(creds);
       let credsObject;
       try {
           credsObject = JSON.parse(creds);
@@ -13,27 +14,31 @@ async function main() {
           throw new Error('Credentials object is not a valid JSON');
       }
 
+      if (!credsObject || typeof credsObject !== 'object' || Array.isArray(credsObject)) {
+          throw new Error('Credentials object must be a JSON object');
+      }
       let servicePrincipalId = credsObject["clientId"];
       let servicePrincipalKey = credsObject["clientSecret"];
       let tenantId = credsObject["tenantId"];
       let subscriptionId = credsObject["subscriptionId"];
-      if (!servicePrincipalId || !servicePrincipalKey || !tenantId || !subscriptionId) {
+      if (![servicePrincipalId, servicePrincipalKey, tenantId, subscriptionId].every(value => typeof value === 'string' && value.trim().length > 0)) {
           throw new Error("Not all values are present in the creds object. Ensure clientId, clientSecret, tenantId and subscriptionId are supplied");
       }
+      core.setSecret(servicePrincipalKey);
       let option: IExecSyncOptions = {
         silent:true, 
         outStream: <stream.Writable>process.stdout,
         errStream: <stream.Writable>process.stderr
        };
-      throwIfError(execSync("az", "login --service-principal -u \"" + servicePrincipalId + "\" -p \"" + servicePrincipalKey + "\" --tenant \"" + tenantId + "\"", option));
-      throwIfError(execSync("az", "account set --subscription \"" + subscriptionId + "\"", option));
+      throwIfError(execSync("az", ["login", "--service-principal", "-u", servicePrincipalId, "-p", servicePrincipalKey, "--tenant", tenantId], option));
+      throwIfError(execSync("az", ["account", "set", "--subscription", subscriptionId], option));
       console.log("Login successful.");    
     } catch (error) {
       console.log("Login failed. Please check the credentials.");
       core.setFailed(error);
     }
     finally {
-      core.warning('This action is moved to azure/login repository, update your workflows to use the new action.');
+      core.warning('This legacy action is deprecated. Update your workflows to use azure/login@v2.');
     }
   }
 

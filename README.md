@@ -1,5 +1,25 @@
 # GitHub Actions for deploying to Azure
 
+## Legacy action and archive preparation
+
+This repository is being prepared for archival. The embedded `login` action is
+deprecated; migrate workflows to the maintained [azure/login](https://github.com/Azure/login)
+action (`azure/login@v2`), preferably using OpenID Connect instead of long-lived
+service-principal secrets. Archiving this repository does not update existing
+workflow references.
+
+The legacy action now uses Node.js 24 and requires Actions runner v2.327.1 or
+newer. Its patched CommonJS-compatible `@actions/core` dependency and production
+dependencies are checked in because Actions runs `login/lib/main.js` directly
+without installing packages. Development-only dependencies are not shipped.
+
+To refresh the shipped action before archival, run `npm ci`, `npm run build`,
+and `npm audit` from `login`, then run `npm prune --omit=dev` and commit the
+updated lockfile, `lib`, and production `node_modules` together. The `npm test`
+command is currently a placeholder, not a regression test suite. Review outstanding
+security alerts and migrate consumers before marking the repository read-only;
+archived code will not receive ongoing security updates.
+
 [GitHub Actions](https://help.github.com/en/articles/about-github-actions)  gives you the flexibility to build an automated software development lifecycle workflow. 
 
 With GitHub Actions for Azure you can create workflows that you can set up in your repository to build, test, package, release and **deploy** to Azure. [Learn more about all other integrations with Azure.](http://aka.ms/GitHubonAzure)
