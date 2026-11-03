@@ -10,12 +10,13 @@ workflow references.
 
 The legacy action now uses Node.js 24 and requires Actions runner v2.327.1 or
 newer. Its patched CommonJS-compatible `@actions/core` dependency and production
-dependencies are checked in because Actions runs `login/lib/main.js` directly
-without installing packages. Development-only dependencies are not shipped.
+dependencies are bundled into `login/dist/index.js` because Actions runs that
+file directly without installing packages. `node_modules` is ignored and is
+not shipped; third-party licenses are included in `login/dist/licenses.txt`.
 
 To refresh the shipped action before archival, run `npm ci`, `npm run build`,
-and `npm audit` from `login`, then run `npm prune --omit=dev` and commit the
-updated lockfile, `lib`, and production `node_modules` together. The `npm test`
+and `npm audit` from `login`, then commit the updated lockfile, `lib`, and `dist`
+together. The `npm test`
 command is currently a placeholder, not a regression test suite. Review outstanding
 security alerts and migrate consumers before marking the repository read-only;
 archived code will not receive ongoing security updates.
